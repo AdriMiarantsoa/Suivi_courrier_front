@@ -7,7 +7,7 @@
       <!-- Alert message -->
       <div v-if="courriers.length > 0" class="alert alert-danger alert-with-icon mt-3" data-notify="container">
         <span data-notify="icon" class="ti-bell"></span>
-        <span>Some documents have not been received for more than 24 hours.</span>
+        <span>Some documents have not been received for more than 72 hours.</span>
       </div>
 
           <table class="table table-hover">

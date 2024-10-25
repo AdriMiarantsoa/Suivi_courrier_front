@@ -37,7 +37,7 @@
           </div>
   
           <div class="text-center">
-            <p-button style="background-color:  rgb(1, 31, 65);" round @click.native.prevent="submitForm">
+            <p-button style="background-color: #007BFF;" round @click.native.prevent="submitForm">
               Insert
             </p-button>
           </div>

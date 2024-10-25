@@ -4,10 +4,10 @@
         <div class="col-12">
           <div class="card">
             <div class="card-header">
-              <h3 style="color:#003366;">{{ this.departementName }}</h3>
+              <h3 style="color:#007BFF;">{{ this.departementName }}</h3>
             </div>  
             <div class="card-body table-responsive">
-              <table class="table">
+              <table class="table" v-if="courriersDepartement.length > 0">
                 <thead>
                   <tr>
                     <th>Status</th>
@@ -29,6 +29,10 @@
                   </tr>
                 </tbody>
               </table>
+              <div v-else class="empty-state">
+                <i class="ti-folder empty-icon"></i>
+                <p>No pending documents for your department</p>
+              </div>
             </div>
           </div>
         </div>
@@ -60,7 +64,7 @@
               </div>    
             </section>
             <div class="btn-group">
-              <p-button style="background-color:  rgb(1, 31, 65);" round @click.native.prevent="submitForm">
+              <p-button style="background-color:  #007BFF;" round @click.native.prevent="submitForm">
                 Received
               </p-button>
               <button v-if="departementName.toLowerCase() === 'direction'" class="btn btn-transfer" @click="ShowTransferForm(id_courrier)">Transfer
@@ -249,6 +253,15 @@
   </script>
   
   <style scoped>
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+  }
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+  }
   .card {
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -302,7 +315,7 @@
   .btn-show {
     display: block;
     width: 100%;
-    background-color:rgb(1, 31, 65);
+    background-color:#007BFF;
     color: white;
   }
   .btn-transfer {
@@ -389,7 +402,7 @@
   }
   
   .btn-submit {
-    background-color:rgb(1, 31, 65);
+    background-color:#007BFF;
     color: #fff;
     padding: 10px 20px;
     border: none;

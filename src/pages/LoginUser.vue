@@ -2,11 +2,11 @@
   <div class="login-container">
     <div class="login-page">
       <div class="left" ref="left">
-        <h2>{{ isLogin ? 'Sign In' : 'Sign Up' }}</h2>
+        <h2>{{ isLogin ? 'Sign In' : '' }}</h2>
         <div v-if="erreurMessage" class="error">{{ erreurMessage }}</div>
         <form @submit.prevent="isLogin ? login() : signUp()">
           <div class="input-field">
-            <label for="nom">USERNAME</label>
+            <label for="nom">Username</label>
             <input type="text" id="nom" v-model="nom_utilisateur" placeholder="Username" />
           </div>
           <div class="input-field">
@@ -15,7 +15,7 @@
             <div v-if="!isValidEmail(email) && email" class="error">e-mail invalide</div>
           </div>
           <div class="input-field">
-            <label for="mdp">PASSWORD</label>
+            <label for="mdp">Password</label>
             <input type="password" id="mdp" v-model="mot_de_passe" placeholder="Password" />
           </div>
           <div v-if="!isLogin" class="input-field">
@@ -158,6 +158,7 @@ export default {
     },
     toggleMode() {
       this.isLogin = !this.isLogin;
+      this.erreurMessage = '';
     },
     isValidEmail(email) {
       // Utilisation d'une expression régulière pour valider l'email
@@ -167,30 +168,27 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 .login-container {
   display: flex;
   justify-content: center; 
   align-items: center; 
   height: 100vh; 
-  background-color: #d3d3d3;
+  background-color: #f0f0f0; 
+  backdrop-filter: blur(10px);
 }
 
 .login-page {
   display: flex;
   width: 800px;
   height: 500px;
-  background-color: #011214;
+  background-color: rgba(255, 255, 255, 0.9); 
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); 
+  border-radius: 10px; 
   overflow-y: auto;
   justify-content: center;
   align-items: center;
   margin: auto;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
 }
 
 .left, .right {
@@ -199,70 +197,84 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  padding: 40px;
 }
 
 .left {
-  border-right: 1px solid #FFFFFF;
-  padding: 40px;
-  box-sizing: border-box;
+  border-right: 1px solid #e0e0e0; 
 }
 
 .right {
-  padding: 40px;
-  box-sizing: border-box;
-  color: #FFFFFF;
+  color: #333; 
 }
 
 .left h2, .right h2 {
   font-size: 24px;
-  margin-bottom: 5px;
-  display: block;
+  margin-bottom: 15px;
+  color: #333; 
 }
 
 .left .input-field {
   width: 100%;
-  margin-bottom: 2px;
-  display: block;
+  margin-bottom: 10px; 
 }
 
 .left .input-field label {
   display: block;
-  margin-bottom: 5px;
-  color: #FFFFFF;
+  margin-bottom: 2px;
+  color: #555; 
+  font-weight: 600; 
 }
 
 .left .input-field input, .left .input-field select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #CCCCCC;
-  border-radius: 5px;
-  background-color: #FFFFFF;
+  border: 1px solid #ccc; 
+  border-radius: 5px; 
+  background-color: #f9f9f9; 
+  transition: border-color 0.3s; 
+}
+
+.left .input-field input:focus, .left .input-field select:focus {
+  border-color: #007BFF; 
+  outline: none; 
 }
 
 .left .sign-in-btn {
   width: 100%;
   padding: 10px;
-  background-color: #F36F21;
+  background-color: #007BFF; 
   border: none;
   border-radius: 5px;
   color: #FFFFFF;
   font-size: 16px;
   cursor: pointer;
   margin-top: 20px;
+  transition: background-color 0.3s; 
+}
+
+.left .sign-in-btn:hover {
+  background-color: #0056b3; 
 }
 
 .right .sign-up-btn {
   padding: 10px 20px;
   background-color: transparent;
-  border: 2px solid #FFFFFF;
+  border: 2px solid #007BFF; 
   border-radius: 5px;
-  color: #FFFFFF;
+  color: #007BFF; 
   cursor: pointer;
   font-size: 16px;
+  transition: background-color 0.3s, color 0.3s; 
+}
+
+.right .sign-up-btn:hover {
+  background-color: #007BFF; 
+  color: #FFFFFF;
 }
 
 .left .forgot-password {
-  color: #FFFFFF;
+  color: #007BFF; 
   text-align: right;
   display: block;
   margin-top: 10px;
@@ -274,27 +286,6 @@ export default {
   margin-bottom: 10px;
 }
 </style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

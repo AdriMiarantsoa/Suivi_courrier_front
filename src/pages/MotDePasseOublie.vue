@@ -66,7 +66,7 @@ export default {
             if (error.response) {
               this.erreurMessage = error.response.data; 
             } else {
-              this.erreurMessage = 'Une erreur est survenue lors de la modification.'; // Message générique
+              this.erreurMessage = 'Une erreur est survenue lors de la modification.'; 
             }
           });
       }
@@ -79,79 +79,83 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .login-container {
   display: flex;
   justify-content: center; 
   align-items: center; 
-  height: 100vh; 
-  background-color: #d3d3d3;
+  min-height: 100vh; 
+  background-color: #f0f0f0; 
+  backdrop-filter: blur(10px);
 }
 
 .login-page {
   display: flex;
   width: 800px;
-  height: 500px;
+  flex-direction: column; 
   justify-content: center;
   align-items: center;
   margin: auto;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  position: relative; 
+  border-radius: 10px; 
 }
 
 .form-container {
-  width: 50%;
+  width: 100%; 
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 30px;
-  margin-top: 10px;
 }
 
 .form {
-  background-color:  #011214;
+  background-color: #ffffff; 
   padding: 30px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); 
   width: 100%;
   max-width: 400px;
-  max-height: 80vh;
-  overflow-y: auto;
-  color:white;
+  border-radius: 10px;
+  color: #333; 
+}
+
+h3 {
+  color: #FF5733; 
+  margin-bottom: 20px; 
 }
 
 .input-field {
-  margin-bottom: 20px;
+  margin-bottom: 20px; 
 }
 
 .input-field label {
-  width: 100%;
-  padding: 10px;
+  display: block; 
+  margin-bottom: 5px; 
+  color: #555; 
 }
 
 .input-field input,
 .input-field select {
   width: 100%;
   padding: 12px;
-  border: 1px solid #CCCCCC;
+  border: 1px solid #ccc; 
+  border-radius: 5px; 
   outline: none;
   font-size: 16px;
-  transition: border-color 0.3s;background-color: #FFFFFF;
+  transition: border-color 0.3s; 
+  background-color: #f9f9f9; 
 }
 
 .input-field input:focus,
 .input-field select:focus {
-  border-color: #003366; 
+  border-color: #007BFF; 
 }
 
 .login-btn {
   width: 100%;
   padding: 12px;
   border: none;
-  border-radius: 25px;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), #003366); 
+  border-radius: 5px; 
+  background-color: #007BFF; 
   color: white;
   font-size: 18px;
   cursor: pointer;
@@ -159,49 +163,23 @@ export default {
 }
 
 .login-btn:hover {
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), #003366); 
-}
-
-.message {
-  text-align: center;
-  cursor: pointer;
-  color: #003366;
+  background-color: #0056b3; 
 }
 
 .error {
   color: red;
-  margin-bottom: 10px;
+  margin-bottom: 10px; 
 }
 
 .back-to-login {
   display: block;
   margin-top: 20px;
   text-align: center;
-  color: #195a9b;
+  color: #007BFF;
   text-decoration: none;
 }
 
 .back-to-login:hover {
-  text-decoration: underline;
-}
-
-@keyframes fadeIn {
-  from {
-      opacity: 0;
-  }
-  to {
-      opacity: 1;
-  }
-}
-
-@keyframes slideIn {
-  from {
-      transform: translateY(20px);
-      opacity: 0;
-  }
-  to {
-      transform: translateY(0);
-      opacity: 1;
-  }
+  text-decoration: underline; 
 }
 </style>

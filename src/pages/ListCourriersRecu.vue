@@ -24,7 +24,7 @@
             </div>
 
             <div class="card-body table-responsive">
-              <table class="table">
+              <table class="table" v-if="reculist.length > 0">
                 <thead>
                   <tr>
                     <th>Status</th>
@@ -46,6 +46,10 @@
                   </tr>
                 </tbody>
               </table>
+
+              <div v-else class="empty-state"><i class="ti-folder empty-icon"></i>
+                <p>No documents received at the moment</p>
+              </div>
             </div>
           </div>
         </div>
@@ -173,6 +177,15 @@
   </script>
   
   <style scoped>
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+  }
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+  }
   .card {
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -240,7 +253,7 @@
     color: white;
   }
   .btn-show:hover {
-    background-color: rgb(1, 31, 65);
+    background-color: #007BFF;
     transition: background-color 1s ease;
   }
   .modal {
@@ -316,7 +329,7 @@
   }
   
   .btn-submit {
-    background-color:  #001122;
+    background-color: #007BFF ;
     color: #fff;
     padding: 10px 20px;
     border: none;
@@ -325,7 +338,7 @@
   }
   
   .btn-submit:hover {
-    background-color:  rgb(1, 31, 65);
+    background-color:  #007BFF;
   }
   
   .form-inline {

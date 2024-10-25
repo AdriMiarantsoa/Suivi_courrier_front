@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-12">
         <div class="card">
-          <div class="card-header">
+          <div v-if="courriersEnAttente.length > 0" class="card-header">
             <h3>{{ table1.title }}</h3>
             <p>{{ table1.subTitle }}</p>
           </div>
@@ -15,7 +15,7 @@
           </div>
 
           <div class="card-body table-responsive">
-            <table class="table">
+            <table class="table" v-if="courriersEnAttente.length > 0">
               <thead>
                 <tr>
                   <th v-for="column in tableColumns" :key="column">{{ column }}</th>
@@ -40,11 +40,14 @@
                     </div>
                   </td>
                 </tr>
-                <tr v-if="courriersEnAttente.length === 0">
-                  <td colspan="7" class="text-center">Aucun courrier en attente</td>
-                </tr>
-              </tbody>
+                </tbody>
             </table>
+
+            <div v-else class="empty-state">
+              <i class="ti-clipboard  empty-icon"></i>
+                <p>No more documents pending registration</p>
+            </div>
+
           </div>
         </div>
       </div>
@@ -196,6 +199,15 @@ export default {
 </script>
 
 <style scoped>
+.empty-state {
+  text-align: center;
+  padding: 100px 80px;
+  color: #6c757d;
+}
+.empty-icon {
+  font-size: 100px;
+  margin-bottom: 40px;
+}
 .card {
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -212,7 +224,6 @@ export default {
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
-
 .card-header h3 {
   margin: 0;
   color: rgb(5, 5, 5); 
@@ -278,7 +289,7 @@ td.description {
 }
 
 .btn-update {
-  background-color: rgb(1, 31, 65);
+  background-color: #007BFF;
   color: white;
 }
 
