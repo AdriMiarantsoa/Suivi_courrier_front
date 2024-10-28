@@ -24,7 +24,7 @@
           <li class="nav-item">
             <p-button type="danger" @click.native.prevent="logout">
               <a >
-                <small>Log out</small>
+                <small>Deconnecter</small>
               </a>
             </p-button>
         </li>

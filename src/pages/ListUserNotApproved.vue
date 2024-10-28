@@ -2,35 +2,43 @@
   <div class="ged-container">
     <div class="card">
       <div class="card-header">
-        <h3>Users Pending Approval</h3>
+        <h3>Utilisateur en attente d'approbation</h3>
       </div>
       <div class="card-body">
         <div v-if="utilisateurlist.length === 0" class="empty-state">
           <i class="ti-folder empty-icon"></i>
-          <p>No users pending approval at the moment.</p>
+          <p>Pas d'utilisateur en attente pour le moment.</p>
         </div>
         <div v-else class="table-responsive">
           <table class="table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Department</th>
+                <th>Nom</th>
+                <th>Departement</th>
                 <th>Role</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="utilisateur in utilisateurlist" :key="utilisateur.id_utilisateur">
+              <tr v-for="utilisateur in paginatedUsers" :key="utilisateur.id_utilisateur">
                 <td>{{ utilisateur.nom_utilisateur }}</td>
                 <td>{{ utilisateur.nom_departement }}</td>
                 <td>{{ utilisateur.nom_role }}</td>
                 <td>
-                  <button class="btn btn-approve" @click="Approve(utilisateur)">Approve</button>
+                  <button class="btn btn-approve btn-space" @click="Approve(utilisateur)"><i class="ti-check"></i></button>
+                  <button class="btn btn-delete btn-space" @click="DeleteUser(utilisateur)"><i class="ti-trash"></i></button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
+
+        <div class="pagination" v-if="utilisateurlist && utilisateurlist.length > 0">
+          <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Précédent</button>
+          <span>Page {{ currentPage }} sur {{ totalPages }}</span>
+          <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages">Suivant</button>
+        </div>
+
       </div>
     </div>
   </div>
@@ -42,11 +50,23 @@
   export default {
     data() {
       return {
-        utilisateurlist: []
+        utilisateurlist: [],
+        currentPage: 1,
+        itemsPerPage: 5
       };
     },
     mounted() {
       this.getListUserNotApprove();
+    },
+    computed: {
+      totalPages() {
+        return Math.ceil(this.utilisateurlist.length / this.itemsPerPage);
+      },
+      paginatedUsers() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = start + this.itemsPerPage;
+        return this.utilisateurlist.slice(start, end);
+      },
     },
     methods: {
         async getListUserNotApprove() {
@@ -66,6 +86,20 @@
             } catch (error) {
                 console.error(error);
             }
+        },
+        async DeleteUser(utilisateur) {
+            try {
+                const response = await axios.delete(`http://localhost:8081/api/deleteUtilisateur/${utilisateur.id_utilisateur}`);
+                console.log("delete :",response.data);
+                this.getListUserNotApprove();
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        changePage(page) {
+          if (page >= 1 && page <= this.totalPages) {
+            this.currentPage = page;
+          }
         }
     }
   };
@@ -144,4 +178,42 @@
   .btn-approve:hover {
     background-color: #218838;
   }
+  .btn-delete {
+    background-color: #e01d0f;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .btn-delete:hover {
+    background-color: #cc2014;
+  }
+  .btn-space {
+    margin-right: 10px; 
+  }
+  /* Styles pour la pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.pagination button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007BFF;
+  color: white;
+  cursor: pointer;
+}
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+.pagination span {
+  align-self: center;
+  margin: 0 10px;
+}
   </style>

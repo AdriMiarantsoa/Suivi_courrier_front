@@ -40,16 +40,16 @@ const routes = [
   {
     path: "/dashboard",
     component: DashboardLayout,
-    redirect: "/dashboard/document_register",
+    redirect: "/dashboard/insertion_document",
     children: [
       {
         path: "/dashboard/document_validation",
-        name: "List of documents awaiting confirmation",
+        name: "Liste des documents en attente de confirmation",
         component: ValidationCourrier,
       },
       {
-        path: "/dashboard/document_register",
-        name: "Insert the document",
+        path: "/dashboard/insertion_document",
+        name: "Insertion de courrier",
         component: InsertCourrier,
       }
     ],
@@ -61,12 +61,12 @@ const routes = [
     children: [
       {
         path: "/board/departement/:id_departement/courriers",
-        name: "Waiting document list",
+        name: "Liste de courriers en attente",
         component: CourriersDepartement,
       },
       {
         path: "/board/courriersRecu",
-        name: "List of documents received by your departement",
+        name: "Liste de courriers reçus par votre departement",
         component: CourriersRecu,
       },
       {
@@ -76,7 +76,7 @@ const routes = [
       },
       {
         path: "/board/statistique",
-        name: "document statistique of your departement",
+        name: "Statistique par an",
         component: StatDept,
       }
     ],
@@ -88,27 +88,27 @@ const routes = [
     children: [
       {
         path: "/adminboard/users",
-        name: "List of users not approved",
+        name: "Liste des utilisateurs en attente non approuvé",
         component: ListUser,
       },
       {
         path: "/adminboard/insert_role",
-        name: "Insertion of role",
+        name: "Insertion de role",
         component: Insert_role,
       },
       {
         path: "/adminboard/insert_departement",
-        name: "Insertion of departement",
+        name: "Insertion de departement",
         component: InsertDepartement,
       },
       {
         path: "/adminboard/list_role",
-        name: "List of roles",
+        name: "Listes de roles",
         component: ListRole,
       },
       {
         path: "/adminboard/list_departement",
-        name: "List of departements",
+        name: "Listes de departements",
         component: ListDepartement,
       }
     ],

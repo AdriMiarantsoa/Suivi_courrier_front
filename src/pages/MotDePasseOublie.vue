@@ -3,31 +3,31 @@
     <div class="login-page">
       <div class="form-container">
         <div class="form">
-          <h3 style="color: #FF5733">Change Password</h3>
+          <h3 style="color: #FF5733">Change le Mot de passe</h3>
   
           <div v-if="erreurMessage" class="error">{{ erreurMessage }}</div>
   
           <form @submit.prevent="ChangeMDP()">
             <div class="input-field">
-              <label for="nom">Username</label>
-              <input type="text" id="nom" v-model="nom_utilisateur" placeholder="Enter your username" />
+              <label for="nom">Nom</label>
+              <input type="text" id="nom" v-model="nom_utilisateur" placeholder="Entre votre nom" />
             </div>
             <div class="input-field">
               <label for="email">Email</label>
-              <input type="email" id="email" v-model="email" placeholder="Enter your mail" />
+              <input type="email" id="email" v-model="email" placeholder="Entre votre mail" />
               <div v-if="!isValidEmail(email) && email" class="error">e-mail invalide</div>
             </div>
             <div class="input-field">
-              <label for="mdp">Password</label>
-              <input type="password" id="mdp" v-model="mot_de_passe" placeholder="Enter your password" />
+              <label for="mdp">Mot de passe</label>
+              <input type="password" id="mdp" v-model="mot_de_passe" placeholder="Entre votre mot de passe" />
             </div>
             <div v-if="!isLogin" class="input-field">
-              <label for="confirm-mdp">Confirm Password</label>
-              <input type="password" id="confirm-mdp" v-model="confirmMdp" placeholder="Re-enter your password" />
+              <label for="confirm-mdp">Confirmation Mot de passe</label>
+              <input type="password" id="confirm-mdp" v-model="confirmMdp" placeholder="Confirmer votre mot de passe" />
             </div>
-            <button type="submit" class="login-btn">Submit</button>
+            <button type="submit" class="login-btn">Valider</button>
           </form>
-          <router-link to="/" class="back-to-login">Back to Login</router-link>
+          <router-link to="/" class="back-to-login">retour</router-link>
         </div>
       </div>
     </div>

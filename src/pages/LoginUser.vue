@@ -2,30 +2,30 @@
   <div class="login-container">
     <div class="login-page">
       <div class="left" ref="left">
-        <h2>{{ isLogin ? 'Sign In' : '' }}</h2>
+        <h2>{{ isLogin ? 'Connexion' : '' }}</h2>
         <div v-if="erreurMessage" class="error">{{ erreurMessage }}</div>
         <form @submit.prevent="isLogin ? login() : signUp()">
           <div class="input-field">
-            <label for="nom">Username</label>
-            <input type="text" id="nom" v-model="nom_utilisateur" placeholder="Username" />
+            <label for="nom">Nom</label>
+            <input type="text" id="nom" v-model="nom_utilisateur" placeholder="Nom" />
           </div>
           <div class="input-field">
             <label for="email">Email</label>
-            <input type="email" id="email" v-model="email" placeholder="Enter your mail" />
+            <input type="email" id="email" v-model="email" placeholder="Entre votre mail" />
             <div v-if="!isValidEmail(email) && email" class="error">e-mail invalide</div>
           </div>
           <div class="input-field">
-            <label for="mdp">Password</label>
-            <input type="password" id="mdp" v-model="mot_de_passe" placeholder="Password" />
+            <label for="mdp">Mot de passe</label>
+            <input type="password" id="mdp" v-model="mot_de_passe" placeholder="Mot de passe" />
           </div>
           <div v-if="!isLogin" class="input-field">
-            <label for="confirm-mdp">Confirm Password</label>
-            <input type="password" id="confirm-mdp" v-model="confirmMdp" placeholder="Re-enter your password" />
+            <label for="confirm-mdp">Confirmation Mot de passe</label>
+            <input type="password" id="confirm-mdp" v-model="confirmMdp" placeholder="Confirme votre mot de passe" />
           </div>
           <div v-if="!isLogin" class="input-field">
             <label for="role">Role</label>
             <select v-model="role" id="role" class="styled-select">
-              <option value="" disabled>Select your role</option>
+              <option value="" disabled>Select votre role</option>
               <option v-for="role in roles" :key="role.id" :value="role">
                 {{ role.nom_role }}
               </option>
@@ -34,22 +34,22 @@
           <div v-if="!isLogin && role.nom_role !== 'Secretaire'" class="input-field">
             <label for="departement">Department</label>
             <select v-model="departement" id="departement" class="styled-select">
-              <option value="" disabled>Select your department</option>
+              <option value="" disabled>Select votre department</option>
               <option v-for="departement in departements" :key="departement.id" :value="departement">
                 {{ departement.nom_departement }}
               </option>
             </select>
           </div>
           <div class="remember-me" v-if="isLogin">
-            <router-link :to="{ name: 'forget_password'}" class="forgot-password">Forgot Password?</router-link>
+            <router-link :to="{ name: 'forget_password'}" class="forgot-password">Mot de passe oublié?</router-link>
           </div>
-          <button type="submit" class="sign-in-btn">{{ isLogin ? 'Sign In' : 'Sign Up' }}</button>
+          <button type="submit" class="sign-in-btn">{{ isLogin ? 'Connexion' : 'Inscription' }}</button>
         </form>
       </div>
       <div class="right">
-        <h2 style="color: #FF5733">Document Tracking</h2>
-        <p>Welcome to {{ isLogin ? 'Sign In' : 'Sign Up' }}</p>
-        <button class="sign-up-btn" @click="toggleMode">{{ isLogin ? 'Sign Up' : 'Sign In' }}</button>
+        <h2 style="color: #FF5733">Suivi de Courrier physique</h2>
+        <p>Bienvenu sur la page de {{ isLogin ? 'Connexion' : 'Inscription' }}</p>
+        <button class="sign-up-btn" @click="toggleMode">{{ isLogin ? 'Inscription' : 'Connexion' }}</button>
       </div>
     </div>
   </div>

@@ -1,19 +1,19 @@
 <template>
   <div class="login-container">
     <div class="login-card">
-      <h2>Welcome</h2>
-      <p>Please login to Admin Dashboard.</p>
+      <h2>Bienvenue</h2>
+      <p>Vous connectez en tant qu'admin.</p>
       <div v-if="erreurMessage" class="error">{{ erreurMessage }}</div>
       <form @submit.prevent="login()">
         <div class="input-field">
-          <label for="nom">Username</label>
-          <input type="text" id="nom" v-model="nom_admin" placeholder="Username" />
+          <label for="nom">Nom</label>
+          <input type="text" id="nom" v-model="nom_admin" placeholder="Nom" />
         </div>
         <div class="input-field">
-          <label for="mdp">Password</label>
-          <input type="password" id="mdp" v-model="mot_de_passe" placeholder="Password" />
+          <label for="mdp">Mot de passe</label>
+          <input type="password" id="mdp" v-model="mot_de_passe" placeholder="Mot de passe" />
         </div>
-        <button type="submit" class="login-btn">LOGIN</button>
+        <button type="submit" class="login-btn">Connexion</button>
       </form>
     </div>
   </div>
@@ -43,7 +43,7 @@ export default {
           const token = response.data.token;
           localStorage.setItem('authToken', token);
           const redirectUrl = response.data.redirect;
-          this.$router.push({ name: 'List of users not approved' });
+          this.$router.push({ name: 'Liste des utilisateurs en attente non approuvé' });
         })
         .catch(error => {
           console.error(error);

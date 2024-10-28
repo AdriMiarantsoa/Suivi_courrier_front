@@ -18,8 +18,9 @@
                     <td>{{ role.nom_role }}</td>
                     <td>
                     <div class="btn-group">
-                          <button class="btn btn-show" @click="Remove(role)">delete</button>
-                        </div>
+                          <button class="btn btn-show" @click="Remove(role)"><i class="ti-trash"></i></button>
+                          <button class="btn btn-update" @click="showUpdateForm(role)"><i class="ti-pencil"></i></button>
+                    </div>
                     </td>
                   </tr>
                 </tbody>
@@ -29,6 +30,27 @@
         </div>
       </div>
 
+      <!-- Formulaire de mise à jour en tant que modal -->
+    <div v-if="showForm" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="hideUpdateForm">&times;</span>
+        <h3 style="color: #FF5733;">Changer le  Role</h3>
+        <form @submit.prevent="submitUpdate">
+          <div v-if="errors" class="alert alert-danger">
+            <ul>
+              <li v-for="error in errors" :key="error">{{ error }}</li>
+            </ul>
+          </div>
+          
+          <div class="form-group">
+            <label for="nom_role">Nom</label>
+            <input type="text" id="nom_role" v-model="selectedRole.nom_role" required>
+          </div>
+          <button type="submit" class="btn btn-submit">Valider</button>
+        </form>
+      </div>
+    </div>
+    
 
     </div>
   </template>
@@ -39,7 +61,10 @@
   export default {
     data() {
       return {
-        rolelist: []
+        rolelist: [],
+      selectedRole: {},
+        showForm: false,
+        errors: null
       };
     },
     mounted() {
@@ -63,10 +88,47 @@
             } catch (error) {
                 console.error(error);
             }
+        },
+        showUpdateForm(role) {
+          this.errors ='';
+          console.log("showUpdateForm called with:",role);
+          this.selectedRole = { ...role};
+          this.showForm = true;
+          console.log("showForm set to true");
+        },
+        hideUpdateForm() {
+          this.showForm = false;
+        },
+        async submitUpdate() {
+          if (!this.selectedRole.nom_role) {
+              this.errors = ["Veuillez remplir les champs nécessaires"];
+              return;
+          }
+          try {
+            const role = {
+              id_role: this.selectedRole.id_role,
+              nom_role: this.selectedRole.nom_role
+            };
+            console.log("Données du formulaire :", role);
+            const response = await axios.put(`http://localhost:8081/api/updateRole`,role, {
+            });
+            console.log(response.data);
+            this.hideUpdateForm();
+            this.getRoles();
+          } catch (error) {
+                if (error.response && error.response.data && error.response.data.message) {
+                  this.errors = [error.response.data.message];
+                } else if (error.response && error.response.data && error.response.data.errors) {
+                  this.errors = error.response.data.errors;
+                } else {
+                  this.errors = ["Une erreur est survenue"];
+                }
+          }
         }
-    }
+  }
   };
   </script>
+  
   
   <style scoped>
   .card {
@@ -114,20 +176,29 @@
     padding: 10px 15px;
     font-size: 14px;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     
   }
+  .btn-group {
+    display: flex;
+    gap: 10px;
+    width: 30px;
+  }
   .btn-show {
-    display: block;
-    width: 100%;
     background-color: #d62e04;
     color: white;
   }
   .btn-show:hover {
     background-color: #9b0707;
     transition: background-color 1s ease;
+  }
+  .btn-update {
+    background-color: #007BFF;
+    color: white;
+  }
+  .btn-update:hover {
+    background-color: #023c7a;
   }
   .modal {
     display: flex;

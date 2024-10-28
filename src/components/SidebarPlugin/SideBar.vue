@@ -43,7 +43,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: "Document tracking",
+      default: "Suivi de courrier",
     },
     backgroundColor: {
       type: String,

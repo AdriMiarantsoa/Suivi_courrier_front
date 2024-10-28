@@ -5,14 +5,14 @@
         <div class="card">
           <div class="card-body" style="height: 400px; display: flex; flex-direction: column;">
             <h3 style="color:#003366;">{{ departementName }}</h3>
-            <h6>Statistics of the number of documents in the department</h6>
+            <h6>Statistiques du nombre de courriers de votre départment</h6>
             <form @submit.prevent="fetchStatistics" class="form-inline">
 
               <div class="form-group mx-sm-3 mb-2">
-                <label for="year" class="mr-2">Year:</label>
+                <label for="year" class="mr-2">Année:</label>
                 <input type="number" v-model="selectedYear" id="year" class="form-control" placeholder="Year" />
               </div>
-              <button type="submit" class="btn btn-primary mb-2">Fetch Statistics</button>
+              <button type="submit" class="btn btn-primary mb-2">Filtrer</button>
             </form>
             <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
               <bar-chart v-if="chartDataGeneral" :data="chartDataGeneral" :options="chartOptions"></bar-chart>
@@ -64,7 +64,7 @@ export default {
         labels: labels,
         datasets: [
           {
-            label: 'Statistics of Document this year',
+            label: 'Statistique courrier de cette année',
             backgroundColor: '#42A5F5',
             data: data
           }

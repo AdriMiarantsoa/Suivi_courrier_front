@@ -9,7 +9,7 @@
                   <tr>
                     <th>ID</th>
                     <th>Departement</th>
-                    <th>Responsable</th>
+                    <th>Supervisor</th>
                     <th>Parent</th>
                     <th>Action</th>
                   </tr>
@@ -22,8 +22,10 @@
                     <td>{{ departement.dept_parent }}</td>
                     <td>
                     <div class="btn-group">
-                          <button class="btn btn-show" @click="Remove(departement)">delete</button>
-                        </div>
+                          <button class="btn btn-show" @click="Remove(departement)"><i class="ti-trash"></i></button>
+
+                          <button class="btn btn-update" @click="showUpdateForm(departement)"><i class="ti-pencil"></i></button>
+                    </div>
                     </td>
                   </tr>
                 </tbody>
@@ -34,6 +36,38 @@
       </div>
 
 
+    <!-- Formulaire de mise à jour en tant que modal -->
+    <div v-if="showForm" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="hideUpdateForm">&times;</span>
+        <h3 style="color: #FF5733;">Changer le Departement</h3>
+        <form @submit.prevent="submitUpdate">
+          <div v-if="errors" class="alert alert-danger">
+            <ul>
+              <li v-for="error in errors" :key="error">{{ error }}</li>
+            </ul>
+          </div>
+          
+          <div class="form-group">
+            <label for="nom_departement">Nom</label>
+            <input type="text" id="nom_departement" v-model="selectedDept.nom_departement" required>
+          </div>
+          <div class="form-group">
+            <label for="responsable">Responsable</label>
+            <input type="text" id="responsable" v-model="selectedDept.responsable" required>
+          </div>
+          <div class="form-group">
+            <label for="dept_destinataire">Departement Parent</label>
+            <select id="dept_destinataire" v-model="selectedDept.dept_parent">
+              <option v-for="dept in departementlist" :key="dept.id" :value="dept">{{ dept.nom_departement }}</option>
+              <option :value="null">Aucun parent</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-submit">Submit</button>
+        </form>
+      </div>
+    </div>
+
     </div>
   </template>
   
@@ -43,7 +77,10 @@
   export default {
     data() {
       return {
-        departementlist: []
+        departementlist: [],
+        errors: null,
+        showForm: false,
+        selectedDept: {}
       };
     },
     mounted() {
@@ -67,7 +104,48 @@
             } catch (error) {
                 console.error(error);
             }
+        },
+        showUpdateForm(departement) {
+          this.errors = '';
+          console.log("showUpdateForm called with:",departement);
+          this.selectedDept = { ...departement};
+          this.showForm = true;
+          console.log("showForm set to true");
+        },
+        hideUpdateForm() {
+          this.showForm = false;
+        },
+        async submitUpdate() {
+          
+            if (!this.selectedDept.nom_departement || !this.selectedDept.responsable ) {
+                this.errors = ["Veuillez remplir les champs nécessaires"];
+                return;
+            }
+          try {
+              const departements = {
+                id_departement: this.selectedDept.id_departement,
+                nom_departement: this.selectedDept.nom_departement,
+                responsable: this.selectedDept.responsable,
+                dept_parent: this.selectedDept.dept_parent
+              };
+              console.log("donnees du departement :",departements);
+
+              const response = await axios.put(`http://localhost:8081/api/updateDepartement`, departements);
+              this.hideUpdateForm();
+              this.getDepartements();
+
+            } catch (error) {
+                  if (error.response && error.response.data && error.response.data.message) {
+                    this.errors = [error.response.data.message];
+                  } else if (error.response && error.response.data && error.response.data.errors) {
+                    this.errors = error.response.data.errors;
+                  } else {
+                    this.errors = ["Une erreur est survenue"];
+                  }
+            }
         }
+    
+        
     }
   };
   </script>
@@ -118,10 +196,13 @@
     padding: 10px 15px;
     font-size: 14px;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     
+  }
+  .btn-group {
+    display: flex;
+    gap: 10px;
   }
   .btn-show {
     display: block;
@@ -132,6 +213,13 @@
   .btn-show:hover {
     background-color: #9b0707;
     transition: background-color 1s ease;
+  }
+  .btn-update {
+    background-color: #007BFF;
+    color: white;
+  }
+  .btn-update:hover {
+    background-color: #023c7a;
   }
   .modal {
     display: flex;

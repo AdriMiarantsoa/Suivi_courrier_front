@@ -4,26 +4,29 @@
         <div class="col-12">
           <div class="card">
             <div class="card-header">
-              <h3 style="color:#007BFF;">{{ this.departementName }}</h3>
+              <h3 style="color:#007BFF;">Département : {{ this.departementName }}</h3>
             </div>  
             <div class="card-body table-responsive">
               <table class="table" v-if="courriersDepartement.length > 0">
                 <thead>
                   <tr>
-                    <th>Status</th>
-                    <th>Name</th>
-                    <th>Expeditor</th>
+                    <th>Statut</th>
+                    <th>Nom</th>
+                    <th>Expediteur</th>
                     <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="courrier in courriersDepartement" :key="courrier.id_courrier">
-                    <td>{{ courrier.statut === 'enregistre' ? 'awaiting processing' : courrier.statut }}</td>
+                  <tr v-for="courrier in paginatedCourriers" :key="courrier.id_courrier">
+                    <td>{{ courrier.statut === 'enregistre' ? 'en attente' : courrier.statut }}</td>
                     <td>{{ courrier.nom_courrier }}</td>
                     <td>{{ courrier.expediteur }}</td>
                     <td>
                     <div class="btn-group">
-                          <button class="btn btn-show" @click="ShowCourrier(courrier)">see details</button>    
+                      <button class="btn btn-details" @click="ShowCourrier(courrier)">
+                        <i class="ti-eye"></i> 
+                        <span>Détails</span>
+                      </button>                            
                     </div>
                     </td>
                   </tr>
@@ -31,8 +34,15 @@
               </table>
               <div v-else class="empty-state">
                 <i class="ti-folder empty-icon"></i>
-                <p>No pending documents for your department</p>
+                <p>Pas de document arrivé pour votre département</p>
               </div>
+
+              <div class="pagination" v-if="courriersDepartement && courriersDepartement.length > 0">
+                <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Précédent</button>
+                <span>Page {{ currentPage }} sur {{ totalPages }}</span>
+                <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages">Suivant</button>
+              </div>
+
             </div>
           </div>
         </div>
@@ -42,8 +52,8 @@
       <div v-if="showForm" class="modal">
         <div class="modal-content">
           <span class="close" @click="hideDetails">&times;</span>
-          <h2>Document Details</h2>
-          <h3>Courier Information</h3>
+          <h2>Details du courrier</h2>
+          <h3>Information du courrier</h3>
           <form @submit.prevent>
             <section>
               <div class="form-group">
@@ -51,11 +61,11 @@
                 <input type="text" v-model="id_courrier.id_courrier" readonly>
               </div>
               <div class="form-group">
-                <label for="nom_courrier">Courier Name</label>
+                <label for="nom_courrier">Nom</label>
                 <input type="text" v-model="id_courrier.nom_courrier" readonly>
               </div>
               <div class="form-group">
-                <label for="expediteur">Expeditor</label>
+                <label for="expediteur">Expediteur</label>
                 <input type="text" v-model="id_courrier.expediteur" readonly>
               </div>
               <div class="form-group">
@@ -65,9 +75,9 @@
             </section>
             <div class="btn-group">
               <p-button style="background-color:  #007BFF;" round @click.native.prevent="submitForm">
-                Received
+                Traité
               </p-button>
-              <button v-if="departementName.toLowerCase() === 'direction'" class="btn btn-transfer" @click="ShowTransferForm(id_courrier)">Transfer
+              <button v-if="departementName.toLowerCase() === 'direction'" class="btn btn-transfer" @click="ShowTransferForm(id_courrier)">Transferé
               </button>
             </div>
           </form>
@@ -78,7 +88,7 @@
       <div v-if="showTransferForm" class="modal">
         <div class="modal-content">
           <span class="close" @click="hideTransferForm">&times;</span>
-          <h2>Transfer document</h2>
+          <h2>Transferé le courrier</h2>
           <form @submit.prevent>
             <section>
               <div class="form-group">
@@ -86,7 +96,7 @@
                 <input type="text" v-model="id_courrier.id_courrier" readonly>
               </div>
               <div class="form-group">
-                <label for="nom_courrier">Name</label>
+                <label for="nom_courrier">Nom</label>
                 <input type="text" v-model="id_courrier.nom_courrier" readonly>
               </div>
               <div class="form-group">
@@ -98,7 +108,7 @@
             </section>
             <div class="text-center">
               <p-button style="background-color:  rgb(231, 21, 21);" round @click.native.prevent="submitTransferForm">
-                Submit
+                Valider
               </p-button>
             </div>
 
@@ -124,14 +134,33 @@
         showTransferForm: false,
 
         selectedDepartement: null,
-        departements: []
+        departements: [],
+
+        currentPage: 1,
+        itemsPerPage: 5,
+        totalItems: 0
       
       };
     },
     mounted() {
       this.getCourriersDepartement();
     },
+    computed: {
+      totalPages() {
+        return Math.ceil(this.courriersDepartement.length / this.itemsPerPage);
+      },
+      paginatedCourriers() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = start + this.itemsPerPage;
+        return this.courriersDepartement.slice(start, end);
+      }
+    },
     methods: {
+        changePage(page) {
+          if (page >= 1 && page <= this.totalPages) {
+            this.currentPage = page;
+          }
+        },
         async getCourriersDepartement() {
             try {
               const userresponse = await axios.get('http://localhost:8081/api/utilisateur', {
@@ -155,7 +184,8 @@
               const response = await axios.get(`http://localhost:8081/api/departement/${this.departementId}/courriers`);
               console.log(response.data);
               this.courriersDepartement = response.data;
-            
+              
+              this.currentPage = 1;
             } catch (error) {
             console.error(error);
             }
@@ -267,6 +297,7 @@
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
+    height:max-content;
   }
   .card-header {
     background-color: #343a40;
@@ -303,6 +334,10 @@
   .table tbody tr:hover {
     background-color: #f1f1f1;
   }
+.table td:first-child {
+  font-weight: 500;
+  color: #6c757d;
+}
   .btn {
     padding: 10px 15px;
     font-size: 14px;
@@ -312,6 +347,44 @@
     transition: background-color 0.3s ease;
     
   }
+  .btn-details {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #f8f9fa;
+    color: #007BFF;
+    border: 1px solid #007BFF;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    min-width: 100px;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.1);
+  }
+  
+  .btn-details:hover {
+    background-color: #007BFF;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+  }
+  
+  .btn-details:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.1);
+  }
+
+  .btn-details i {
+    font-size: 14px;
+  }
+  
+  .table td .btn-group {
+    display: flex;
+    justify-content: center;
+  }
+
   .btn-show {
     display: block;
     width: 100%;
@@ -419,5 +492,27 @@
     gap: 10px;
     justify-content: center;
   }
-  
+/* Styles pour la pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.pagination button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007BFF;
+  color: white;
+  cursor: pointer;
+}
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+.pagination span {
+  align-self: center;
+  margin: 0 10px;
+}
   </style>

@@ -1,5 +1,5 @@
 <template>
-    <card class="card" title="Insert Document">
+    <card class="card" title="Insertion Courrier">
       <div>
         <form @submit.prevent>
           <div v-if="errors" class="alert alert-danger">
@@ -12,23 +12,23 @@
             <div class="col-md-12">
               <fg-input
                 type="text"
-                label="name"
-                placeholder="Enter Document name"
+                label="nom"
+                placeholder="Entre le nom du courrier"
                 class="form-input"
                 v-model="formData.nom_courrier"
               >
               </fg-input>
               <fg-input
                 type="text"
-                label="expeditor"
-                placeholder="Enter Document expeditor"
+                label="expediteur"
+                placeholder="Entre le nom de l'expediteur"
                 class="form-input"
                 v-model="formData.expediteur"
               >
               </fg-input>
               <textarea name="description" 
                 label="description"
-                placeholder="Enter Document description" 
+                placeholder="Entre la description" 
                 rows="5"
                 class="form-control border-input"
                 v-model="formData.description"
@@ -86,7 +86,7 @@
     methods: {
       async submitForm() {
         if (!this.formData.nom_courrier || !this.formData.expediteur || !this.formData.dept_destinataire) {
-          this.errors = ["Please fill in all required fields"];
+          this.errors = ["Veuillez remplir les champs nécessaires"];
           return;
         }
         try {
@@ -100,7 +100,7 @@
             } else if (error.response && error.response.data && error.response.data.errors) {
               this.errors = error.response.data.errors;
             } else {
-              this.errors = ["An unknown error occurred. Please try again later."];
+              this.errors = ["une erreur a survenue"];
             }
         }
       },
@@ -114,7 +114,7 @@
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    max-height: 520px; 
+    max-height: max-content; 
     overflow-y: auto; 
     overflow-x: hidden; 
   }

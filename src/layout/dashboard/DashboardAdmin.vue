@@ -4,34 +4,34 @@
       <template slot="links">
         <sidebar-link
           to="/adminboard/users"
-          name="List of Users Not Approved"
+          name="Liste des utilisateurs non approuvés"
           icon="ti-view-list-alt"
         />
         <sidebar-link
           to="/adminboard/insert_role"
-          name="Insertion of Role"
+          name="Insertion de Role"
           icon="ti-view-list-alt"
         />
         <sidebar-link
           to="/adminboard/insert_departement"
-          name="Insertion of Departement"
+          name="Insertion de Departement"
           icon="ti-view-list-alt"
         />
         <sidebar-link
           to="/adminboard/list_role"
-          name="List of Roles"
+          name="Listes de Roles"
           icon="ti-view-list-alt"
         />
         <sidebar-link
           to="/adminboard/list_departement"
-          name="List of Departements"
+          name="Listes de Departements"
           icon="ti-view-list-alt"
         />
         
         <!-- Ajout du bouton Log Out ici -->
         <div class="sidebar-logout">
           <p-button type="danger" class="full-width-btn" @click.native.prevent="logout">
-            <small>Log Out</small>
+            <small>Deconnecter</small>
           </p-button>
         </div>
       </template>

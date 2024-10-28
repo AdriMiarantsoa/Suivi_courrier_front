@@ -1,5 +1,5 @@
 <template>
-    <card class="card" title="Insert Departement">
+    <card class="card" title="Insertion Departement">
       <div>
         <form @submit.prevent>
           <div v-if="errors" class="alert alert-danger">
@@ -12,15 +12,15 @@
             <div class="col-md-12">
               <fg-input
                 type="text"
-                label="name"
-                placeholder="Enter Departement name"
+                label="nom"
+                placeholder="Entre le nom de département"
                 v-model="formData.nom_departement"
               >
               </fg-input>
               <fg-input
                 type="text"
                 label="responsable"
-                placeholder="Enter Responsable name"
+                placeholder="Entre le responsable"
                 v-model="formData.responsable"
               >
               </fg-input>
@@ -74,7 +74,7 @@
     methods: {
       async submitForm() {
         if (!this.formData.nom_departement || !this.formData.responsable ) {
-          this.errors = ["Please fill in all required fields"];
+          this.errors = ["Veuillez remplir les champs nécessaires"];
           return;
         }
 
@@ -94,7 +94,7 @@
             } else if (error.response && error.response.data && error.response.data.errors) {
               this.errors = error.response.data.errors;
             } else {
-              this.errors = ["An unknown error occurred. Please try again later."];
+              this.errors = ["une erreur a survenue"];
             }
         }
 

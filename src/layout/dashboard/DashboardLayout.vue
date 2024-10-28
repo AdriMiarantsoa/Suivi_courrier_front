@@ -4,14 +4,14 @@
       <template slot="links">
        
         <sidebar-link
-          to="/dashboard/document_register"
-          name="Save Document "
+          to="/dashboard/insertion_document"
+          name="Insertion de courrier"
           icon="ti-view-list-alt"
         />
     
         <sidebar-link
           to="/dashboard/document_validation"
-          name="Document validation "
+          name="Validation de courrier "
           icon="ti-view-list-alt"
         />
 

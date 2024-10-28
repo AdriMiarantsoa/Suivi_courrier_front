@@ -22,7 +22,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="courrier in courriersEnAttente" :key="courrier.id_courrier">
+                <tr v-for="courrier in currentItems" :key="courrier.id_courrier">
                   <td>{{ courrier.id_courrier }}</td>
                   <td>{{ courrier.date_reception }}</td>
                   <td>{{ courrier.nom_courrier }}</td>
@@ -35,8 +35,8 @@
                   </td>
                   <td>
                     <div class="btn-group">
-                      <button class="btn btn-confirm" @click="confirmCourrier(courrier)">Confirm</button>
-                      <button class="btn btn-update" @click="showUpdateForm(courrier)">Update</button>
+                      <button class="btn btn-confirm" @click="confirmCourrier(courrier)"><i class="ti-check"></i></button>
+                      <button class="btn btn-update" @click="showUpdateForm(courrier)"><i class="ti-pencil"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -45,7 +45,13 @@
 
             <div v-else class="empty-state">
               <i class="ti-clipboard  empty-icon"></i>
-                <p>No more documents pending registration</p>
+                <p>Plus de courrier en attente d'enregistrement</p>
+            </div>
+
+            <div class="pagination" v-if="courriersEnAttente && courriersEnAttente.length > 0">
+              <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Précédent</button>
+              <span>Page {{ currentPage }} sur {{ totalPages }}</span>
+              <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages">Suivant</button>
             </div>
 
           </div>
@@ -57,7 +63,7 @@
     <div v-if="showForm" class="modal">
       <div class="modal-content">
         <span class="close" @click="hideUpdateForm">&times;</span>
-        <h3 style="color: #FF5733;">Update Courrier</h3>
+        <h3 style="color: #FF5733;">Rectification du Courrier</h3>
         <form @submit.prevent="submitUpdate">
           <div v-if="errors" class="alert alert-danger">
             <ul>
@@ -66,11 +72,11 @@
           </div>
           
           <div class="form-group">
-            <label for="date_reception">Date of Reception</label>
+            <label for="date_reception">Date de reception</label>
             <input type="date" id="date_reception" v-model="selectedCourrier.date_reception" required>
           </div>
           <div class="form-group">
-            <label for="nom_courrier">Name</label>
+            <label for="nom_courrier">Nom</label>
             <input type="text" id="nom_courrier" v-model="selectedCourrier.nom_courrier" required>
           </div>
           <div class="form-group">
@@ -78,17 +84,17 @@
             <textarea id="description" v-model="selectedCourrier.description" rows="5" required></textarea>
           </div>
           <div class="form-group">
-            <label for="expediteur">Expeditor</label>
+            <label for="expediteur">Expediteur</label>
             <input type="text" id="expediteur" v-model="selectedCourrier.expediteur" required>
           </div>
           <div class="form-group">
             <label for="dept_destinataire">Departement</label>
             <select id="dept_destinataire" v-model="selectedCourrier.dept_destinataire" required>
-              <option value="" disabled selected>Select a department</option>
+              <option value="" disabled selected>Select le department</option>
               <option v-for="dept in departements" :key="dept.id" :value="dept">{{ dept.nom_departement }}</option>
             </select>
           </div>
-          <button type="submit" class="btn btn-submit">Submit</button>
+          <button type="submit" class="btn btn-submit">Valider</button>
         </form>
       </div>
     </div>
@@ -103,28 +109,59 @@ export default {
     return {
       courriersEnAttente: [],
       table1: {
-        title: 'Table in Waiting for Registration',
-        subTitle: 'List of Couriers Awaiting Registration'
+        title: 'Tableau des courriers non enregistrés',
+        subTitle: 'Listes des courriers en attente de confirmation'
       },
       errors: null,
-      tableColumns: ["Id", "Date of Reception", "Name", "Description", "Expeditor", "Departement", "Actions"],
+      tableColumns: ["Id", "Date de reception", "Nom", "Description", "Expediteur", "Departement", "Actions"],
       showForm: false,
       selectedCourrier: {},
-      departements: []
+      departements: [],
+
+      currentPage: 1,
+        itemsPerPage: 5,
+        totalItems: 0
     };
   },
   mounted() {
     this.getCourriersEnAttente();
     this.getDepartements();
   },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
+    currentItems() {
+      if (!this.courriersEnAttente) return [];
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      return this.courriersEnAttente.slice(start, start + this.itemsPerPage);
+    }
+  },
   methods: {
     async getCourriersEnAttente() {
       try {
-        const response = await axios.get("http://localhost:8081/api/courriers_attente");
-        console.log(response.data); 
-        this.courriersEnAttente = response.data;
+        const params = new URLSearchParams({
+          page: this.currentPage,
+          limit: this.itemsPerPage
+        });
+
+        const response = await axios.get(`http://localhost:8081/api/courriers_attente?${params}`);
+        
+        if (response.data) {
+          this.courriersEnAttente = response.data;
+          this.totalItems = response.data.length;
+          console.log("Courriers chargés :", this.courriersEnAttente);
+        } else {
+          this.courriersEnAttente = [];
+          this.totalItems = 0;
+          console.log("Aucun courrier trouvé");
+        }
+
       } catch (error) {
-        console.error(error);
+        console.error("Erreur lors du chargement des courriers :", error);
+        this.courriersEnAttente = [];
+        this.totalItems = 0;
+        this.errors = ["Erreur lors du chargement des courriers"];
       }
     },
     async getDepartements() {
@@ -159,7 +196,7 @@ export default {
     },
     async submitUpdate() {
       if (!this.selectedCourrier.date_reception || !this.selectedCourrier.nom_courrier || !this.selectedCourrier.expediteur || !this.selectedCourrier.dept_destinataire) {
-          this.errors = ["Please fill in all fields"];
+          this.errors = ["Veuillez remplir les champs nécessaires"];
           return;
       }
       try {
@@ -185,9 +222,14 @@ export default {
             } else if (error.response && error.response.data && error.response.data.errors) {
               this.errors = error.response.data.errors;
             } else {
-              this.errors = ["An unknown error occurred. Please try again later."];
+              this.errors = ["une erreur a survenue"];
             }
       }
+    },
+    changePage(page) {
+      if (page < 1 || page > this.totalPages) return; // Vérifier les limites
+      this.currentPage = page;
+      this.getCourriersEnAttente();
     }
   },
   watch: {
@@ -370,5 +412,28 @@ td.description {
 
 .btn-submit:hover {
   background-color: #218838;
+}
+/* Styles pour la pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.pagination button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007BFF;
+  color: white;
+  cursor: pointer;
+}
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+.pagination span {
+  align-self: center;
+  margin: 0 10px;
 }
 </style>

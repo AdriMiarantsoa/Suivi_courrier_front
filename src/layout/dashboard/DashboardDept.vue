@@ -14,17 +14,17 @@
 
         <sidebar-link
           to="/board/departement/:id_departement/courriers"
-          name="Waiting document list"
+          name="Liste de courriers en attente"
           icon="ti-view-list-alt"
         />
         <sidebar-link
           to="/board/courriersRecu"
-          name="List of documents received by your department"
+          name="Liste de courriers reçus par votre departement"
           icon="ti-view-list-alt"
         />
         <sidebar-link
           to="/board/statistique"
-          name="document statistique of your departement"
+          name="Statistique des courriers par an"
           icon="ti-view-list-alt"
         />
       </template>

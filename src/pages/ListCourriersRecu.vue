@@ -7,19 +7,19 @@
                 
                 <div class="form-inline">
                   <div class="form-group">
-                    <label for="expediteur">Expeditor:</label>
+                    <label for="expediteur">Expediteur:</label>
                     <input type="text" v-model="expediteur" id="expediteur" />
                   </div>  
                   <div class="form-group">
-                      <label for="startDate">Start Date:</label>
+                      <label for="startDate">Date début:</label>
                       <input type="date" v-model="startDate" id="startDate" />
                     </div>
                     <div class="form-group">
-                      <label for="endDate">End Date:</label>
+                      <label for="endDate">Date Fin:</label>
                       <input type="date" v-model="endDate" id="endDate" />
                     </div>
-                    <button class="btn btn-submit" @click="getListRecu">Filter</button>
-                    <button v-if="!startDate && !endDate && !expediteur" class="btn btn-submit export-button" @click="downloadFile">Excel exportation</button>
+                    <button class="btn btn-submit" @click="getListRecu">Filtrer</button>
+                    <button v-if="!startDate && !endDate && !expediteur" class="btn btn-submit export-button" @click="downloadFile">export Excel</button>
                   </div>
             </div>
 
@@ -27,16 +27,16 @@
               <table class="table" v-if="reculist.length > 0">
                 <thead>
                   <tr>
-                    <th>Status</th>
-                    <th>Document</th>
+                    <th>Statut</th>
+                    <th>Courrier</th>
                     <th>Description</th>
-                    <th>Expeditor</th>
-                    <th>Date of treatment</th>
-                    <th>Receive by</th>
+                    <th>Expediteur</th>
+                    <th>Date de traitement</th>
+                    <th>Reçu par</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="courrier in reculist" :key="courrier.id_courrier">
+                  <tr v-for="courrier in currentItems" :key="courrier.id_courrier">
                     <td>{{ courrier.statut }}</td>
                     <td>{{ courrier.nom_courrier }}</td>
                     <td>{{ courrier.description }}</td>
@@ -48,8 +48,15 @@
               </table>
 
               <div v-else class="empty-state"><i class="ti-folder empty-icon"></i>
-                <p>No documents received at the moment</p>
+                <p>Pas de courrier reçu pour le moment</p>
               </div>
+
+              <div class="pagination" v-if="this.reculist && this.reculist.length > 0">
+                <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Précédent</button>
+                <span>Page {{ currentPage }} sur {{ totalPages }}</span>
+                <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages">Suivant</button>
+              </div>
+
             </div>
           </div>
         </div>
@@ -73,12 +80,25 @@
         endDate: '',
         departementName: '',
 
-        downloadUrl: ''
+        downloadUrl: '',
+
+        currentPage: 1,
+        itemsPerPage: 5,
+        totalItems: 0
       };
     },
     async mounted() {
       await this.getListRecu();
       this.exportCourriers();
+    },
+    computed: {
+      totalPages() {
+        return Math.ceil(this.totalItems / this.itemsPerPage);
+      },
+      currentItems() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        return this.reculist.slice(start, start + this.itemsPerPage);
+      }
     },
     methods: {
         async getListRecu() {
@@ -119,10 +139,15 @@
                     params.push(`expediteur=${this.expediteur}`);
                 }
 
+                // Ajout des paramètres de pagination
+                params.push(`page=${this.currentPage}`);
+                params.push(`limit=${this.itemsPerPage}`);
+
                 const paramString = params.length > 0 ? `?${params.join('&')}` : '';
                 const listresponse = await axios.get(`${url}${paramString}`);
 
                 this.reculist = listresponse.data;
+                this.totalItems = listresponse.data.length;
 
                 console.log("liste :", this.reculist);
             } catch (error) {
@@ -154,8 +179,14 @@
           } catch (error) {
             console.error(error);
           }
+        },
+        changePage(page) {
+          if (page < 1 || page > this.totalPages) return; // Vérifier les limites
+          this.currentPage = page;
+          this.getListRecu();
         }
-    },
+
+      },
     watch: {
         startDate() {
             if (!this.startDate) {
@@ -191,8 +222,7 @@
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-
-    max-height: 450px; 
+    max-height: max-content;
     overflow-y: auto; 
     overflow-x: hidden; 
   }
@@ -377,4 +407,27 @@
     top: 65px;
     left: 10px;
   }
+/* Styles pour la pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.pagination button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007BFF;
+  color: white;
+  cursor: pointer;
+}
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+.pagination span {
+  align-self: center;
+  margin: 0 10px;
+}
   </style>
