@@ -27,7 +27,7 @@
               <table class="table" v-if="reculist.length > 0">
                 <thead>
                   <tr>
-                    <th>Statut</th>
+                    <th>Id</th>
                     <th>Courrier</th>
                     <th>Description</th>
                     <th>Expediteur</th>
@@ -37,9 +37,9 @@
                 </thead>
                 <tbody>
                   <tr v-for="courrier in currentItems" :key="courrier.id_courrier">
-                    <td>{{ courrier.statut }}</td>
+                    <td>{{ courrier.id_courrier }}</td>
                     <td>{{ courrier.nom_courrier }}</td>
-                    <td>{{ courrier.description }}</td>
+                    <td class="description">{{ courrier.description }}</td>
                     <td>{{ courrier.expediteur }}</td>
                     <td>{{ courrier.date_traitement }}</td>
                     <td>{{ courrier.nom_utilisateur }}</td>
@@ -222,10 +222,31 @@
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    max-height: max-content;
-    overflow-y: auto; 
-    overflow-x: hidden; 
-  }
+    width: 100%; /* Assurez-vous que la carte prend toute la largeur */
+}
+
+.card-body.table-responsive {
+    overflow-x: auto; 
+}
+
+.table {
+    width: 100%; 
+    border-collapse: collapse;
+    margin-top: 55px;
+}
+
+.table th, .table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    position: relative;
+}
+.table td.description {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 200px;
+  color: #6c757d;
+}
   .card-header {
     background-color: #343a40;
     color: white;
@@ -239,28 +260,7 @@
     color:rgb(12, 12, 12);
     font-size: medium;
   }
-  .card-body {
-    padding: 20px;
-  }
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top:55px;
-  }
-  .table th, .table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    position: relative;
-  }
-  .table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-  }
-  .table td {
-    word-break: break-word; 
-  }
-
+ 
   .table tbody tr:nth-child(even) {
     background-color: #f9f9f9;
   }

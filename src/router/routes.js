@@ -20,6 +20,7 @@ import ListDepartement from "@/pages/ListDepartement.vue";
 import CourriersRecu from "@/pages/ListCourriersRecu.vue";
 import MotDePasse from "@/pages/MotDePasseOublie.vue";
 import StatDept from "@/pages/StatistiqueCourrierDept.vue";
+import etatCourrier from "@/pages/EtatCourrier.vue";
 
 const routes = [
   {
@@ -68,6 +69,11 @@ const routes = [
         path: "/board/courriersRecu",
         name: "Liste de courriers reçus par votre departement",
         component: CourriersRecu,
+      },
+      {
+        path: "/board/etatCourrier",
+        name: "Suivi de l'etat du courrier",
+        component: etatCourrier,
       },
       {
         path: "/board/notifications",

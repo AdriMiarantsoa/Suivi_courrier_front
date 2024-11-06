@@ -11,6 +11,7 @@
                 <thead>
                   <tr>
                     <th>Statut</th>
+                    <th>ID</th>
                     <th>Nom</th>
                     <th>Expediteur</th>
                     <th>Action</th>
@@ -19,6 +20,7 @@
                 <tbody>
                   <tr v-for="courrier in paginatedCourriers" :key="courrier.id_courrier">
                     <td>{{ courrier.statut === 'enregistre' ? 'en attente' : courrier.statut }}</td>
+                    <td>{{ courrier.id_courrier }}</td>
                     <td>{{ courrier.nom_courrier }}</td>
                     <td>{{ courrier.expediteur }}</td>
                     <td>
@@ -260,16 +262,18 @@
           console.log(this.selectedDepartement);
           try {
             const transferData = {
-              id_courrier: this.id_courrier.id_courrier,
-              dept_destinataire: this.selectedDepartement,
+              id_courrier: this.id_courrier,
+              departement: this.selectedDepartement,
+              date_transfert: new Date(), 
             };
             console.log("Sending Transfer Data:", transferData);
             
-            await axios.put(`http://localhost:8081/api/transfer_courrier?id_courrier=${transferData.id_courrier}&dept_destinataire=${transferData.dept_destinataire.id_departement}`, null, {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem('authToken')}`, 
-              },
-            });
+            
+          await axios.post('http://localhost:8081/api/insert_Transfert', transferData, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('authToken')}`, 
+            },
+          });
 
             this.hideTransferForm();
             this.getCourriersDepartement();

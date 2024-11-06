@@ -23,6 +23,11 @@
           icon="ti-view-list-alt"
         />
         <sidebar-link
+          to="/board/etatCourrier"
+          name="Etat actuel du courrier"
+          icon="ti-view-list-alt"
+        />
+        <sidebar-link
           to="/board/statistique"
           name="Statistique des courriers par an"
           icon="ti-view-list-alt"

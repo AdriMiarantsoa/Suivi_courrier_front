@@ -4,17 +4,19 @@
       <div class="col-12">
         <div class="card">
           <div class="card-body" style="height: 400px; display: flex; flex-direction: column;">
-            <h3 style="color:#003366;">{{ departementName }}</h3>
-            <h6>Statistiques du nombre de courriers de votre départment</h6>
-            <form @submit.prevent="fetchStatistics" class="form-inline">
+            <button class="btn btn-primary mb-2" style="width:max-content;" @click="exportToPDF()">Exporter en PDF</button>
 
+            <h3 style="color:#003366;">Departement :{{ departementName }}</h3> 
+            
+            <h6>Statistiques du nombre de courriers de votre départment</h6> 
+            <form @submit.prevent="fetchStatistics" class="form-inline">
               <div class="form-group mx-sm-3 mb-2">
                 <label for="year" class="mr-2">Année:</label>
                 <input type="number" v-model="selectedYear" id="year" class="form-control" placeholder="Year" />
               </div>
               <button type="submit" class="btn btn-primary mb-2">Filtrer</button>
             </form>
-            <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+            <div  ref="contentToExport" style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
               <bar-chart v-if="chartDataGeneral" :data="chartDataGeneral" :options="chartOptions"></bar-chart>
               <p v-else>Aucune donnée à afficher.</p>
             </div>
@@ -29,6 +31,8 @@
 import { Bar } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
 import axios from 'axios';
+import html2pdf from 'html2pdf.js';
+import html2canvas from 'html2canvas';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
@@ -147,6 +151,32 @@ export default {
         this.statisticsData = response.data;
         console.log("Monthly Statistics Data:", this.statisticsData);
       }
+    },
+    exportToPDF() {
+      const pdfContent = document.createElement('div');
+
+      pdfContent.innerHTML = `
+        <h3 style="color:#003366;">Département : ${this.departementName}</h3>
+        <h6>Année : ${this.selectedYear || 'Actuelle'}</h6>
+        <h6>Statistiques du volume de courriers de votre département</h6>
+      `;
+
+      // Attendre que le graphique soit rendu
+      this.$nextTick(() => {
+        const element = this.$refs.contentToExport;
+        html2canvas(element).then((canvas) => {
+          pdfContent.appendChild(canvas);
+
+          const opt = {
+            margin: 1,
+            filename: 'statistiques_courriers.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+          };
+          html2pdf().from(pdfContent).set(opt).save();
+        });
+      });
     }
   }
 };
