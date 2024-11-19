@@ -5,54 +5,62 @@
         <h3>Utilisateur en attente d'approbation</h3>
       </div>
       <div class="card-body">
-        <div v-if="utilisateurlist.length === 0" class="empty-state">
-          <i class="ti-folder empty-icon"></i>
-          <p>Pas d'utilisateur en attente pour le moment.</p>
+        <div v-if="loading" class="loading-indicator">
+          Chargement...
         </div>
-        <div v-else class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Nom</th>
-                <th>Departement</th>
-                <th>Role</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="utilisateur in paginatedUsers" :key="utilisateur.id_utilisateur">
-                <td>{{ utilisateur.nom_utilisateur }}</td>
-                <td>{{ utilisateur.nom_departement }}</td>
-                <td>{{ utilisateur.nom_role }}</td>
-                <td>
-                  <button class="btn btn-approve btn-space" @click="Approve(utilisateur)"><i class="ti-check"></i></button>
-                  <button class="btn btn-delete btn-space" @click="DeleteUser(utilisateur)"><i class="ti-trash"></i></button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div v-else>
+          <div v-if="utilisateurlist.length === 0" class="empty-state">
+            <i class="ti-folder empty-icon"></i>
+            <p>Pas d'utilisateur en attente pour le moment.</p>
+          </div>
+          <div v-else class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Departement</th>
+                  <th>Role</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="utilisateur in paginatedUsers" :key="utilisateur.id_utilisateur">
+                  <td>{{ utilisateur.nom_utilisateur }}</td>
+                  <td>{{ utilisateur.nom_departement }}</td>
+                  <td>{{ utilisateur.nom_role }}</td>
+                  <td>
+                    <button class="btn btn-approve btn-space" @click="Approve(utilisateur)">
+                      <i class="ti-check"></i>
+                    </button>
+                    <button class="btn btn-delete btn-space" @click="DeleteUser (utilisateur)">
+                      <i class="ti-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination" v-if="utilisateurlist && utilisateurlist.length > 0">
+            <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Précédent</button>
+            <span>Page {{ currentPage }} sur {{ totalPages }}</span>
+            <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages">Suivant</button>
+          </div>
         </div>
-
-        <div class="pagination" v-if="utilisateurlist && utilisateurlist.length > 0">
-          <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Précédent</button>
-          <span>Page {{ currentPage }} sur {{ totalPages }}</span>
-          <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages">Suivant</button>
-        </div>
-
       </div>
     </div>
   </div>
 </template>
-  
+
   <script>
   import axios from 'axios';
-  
+
   export default {
     data() {
       return {
         utilisateurlist: [],
         currentPage: 1,
-        itemsPerPage: 5
+        itemsPerPage: 5,
+        loading: false
       };
     },
     mounted() {
@@ -79,21 +87,29 @@
             }
         },
         async Approve(utilisateur) {
+            this.loading = true;
             try {
                 const response = await axios.put(`http://localhost:8081/api/approve/${utilisateur.id_utilisateur}`);
-                console.log("update :",response.data);
-                this.getListUserNotApprove();
+                console.log("update :", response.data);
+                await this.getListUserNotApprove();
             } catch (error) {
                 console.error(error);
+                alert("Une erreur est survenue lors de l'approbation de l'utilisateur.");
+            } finally {
+                this.loading = false;
             }
         },
         async DeleteUser(utilisateur) {
+            this.loading = true;
             try {
                 const response = await axios.delete(`http://localhost:8081/api/deleteUtilisateur/${utilisateur.id_utilisateur}`);
                 console.log("delete :",response.data);
-                this.getListUserNotApprove();
+                await this.getListUserNotApprove();
             } catch (error) {
                 console.error(error);
+                alert("Une erreur est survenue lors du rejet de l'utilisateur.");
+            }finally {
+                this.loading = false;
             }
         },
         changePage(page) {
@@ -215,5 +231,11 @@
 .pagination span {
   align-self: center;
   margin: 0 10px;
+}
+.loading-indicator {
+  text-align: center;
+  font-size: 18px;
+  color: #007BFF;
+  margin: 20px 0;
 }
   </style>

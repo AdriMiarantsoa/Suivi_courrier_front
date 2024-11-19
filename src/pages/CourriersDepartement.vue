@@ -58,6 +58,36 @@
           <h3>Information du courrier</h3>
           <form @submit.prevent>
             <section>
+              <div v-if="error_upload" class="alert alert-danger">
+                <ul>
+                  <li v-for="error in error_upload" :key="error">{{ error }}</li>
+                </ul>
+              </div>
+              
+              <div class="form-group" v-if="fichiers && fichiers.length > 0">
+                <label for="fichiers">Fichiers associés</label>
+                <div class="files-container" v-if="fichiers && fichiers.length > 0">
+                  <div v-for="fichier in fichiers" :key="fichier.id" class="file-item">
+                    <div v-if="isImage(fichier)">
+                      <p>
+                        <a :href="getFileUrl(fichier.chemin)" target="_blank">{{ fichier.chemin.split('/').pop() }}</a>
+                        <img :src="getFileUrl(fichier.chemin)" alt="Image" style="max-width: 200px; max-height: 200px;" />
+                      </p>
+                    </div>
+                    <div v-else-if="isPdf(fichier)">
+                      <p><a :href="getFileUrl(fichier.chemin)" target="_blank">{{ fichier.chemin.split('/').pop() }}</a></p>
+                      <embed :src="getFileUrl(fichier.chemin)" type="application/pdf" width="300" height="200" />
+                    </div>
+                    <div v-else>
+                      <a :href="getFileUrl(fichier.chemin)" target="_blank">{{ fichier.chemin.split('/').pop() }}</a>
+                    </div>
+                  </div>
+                </div>
+                <div v-else>
+                  <p>Aucun fichier associé.</p>
+                </div>
+              </div>
+
               <div class="form-group">
                 <label for="id">ID</label>
                 <input type="text" v-model="id_courrier.id_courrier" readonly>
@@ -135,6 +165,9 @@
         id_courrier: {},
         showTransferForm: false,
 
+        fichiers: [],
+        error_upload: null,
+
         selectedDepartement: null,
         departements: [],
 
@@ -158,6 +191,15 @@
       }
     },
     methods: {
+        isImage(fichier) {
+          return fichier.chemin.endsWith('.png') || fichier.chemin.endsWith('.jpg') || fichier.chemin.endsWith('.jpeg') || fichier.chemin.endsWith('.gif');
+        },
+        isPdf(fichier) {
+          return fichier.chemin.endsWith('.pdf');
+        },
+        getFileUrl(chemin) {
+          return `http://localhost:8081/uploads/${chemin.split('/').pop()}`;
+        },
         changePage(page) {
           if (page >= 1 && page <= this.totalPages) {
             this.currentPage = page;
@@ -192,15 +234,28 @@
             console.error(error);
             }
         },
-        ShowCourrier(courrier) {
+        async ShowCourrier(courrier) {
             console.log("showUpdateForm called with:", courrier);
             this.id_courrier = { ...courrier };
             this.showForm = true;
             console.log("showForm set to true");
+
+            // Récupérer les fichiers associés à ce courrier
+            try {
+              const response = await axios.get(`http://localhost:8081/api/courriers/${courrier.id_courrier}/fichiers`);
+              this.fichiers = response.data; 
+
+              console.log("Fichiers associés récupérés :", this.fichiers);
+
+              } catch (error) {
+              console.error("Erreur lors de la récupération des fichiers :", error);
+              this.error_upload = ["Erreur lors de la récupération des fichiers"];
+              this.selectedCourrier.fichiers = [];
+            }
         },
-        hideDetails() {
+      hideDetails() {
         this.showForm = false;
-        },
+      },
       async submitForm() {
         console.log(this.id_courrier);
         console.log(this.recu_par);
@@ -518,5 +573,17 @@
 .pagination span {
   align-self: center;
   margin: 0 10px;
+}
+/*upload */
+.files-container {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 10px;
+}
+
+.file-item {
+  flex: 0 1 auto; /* Permet aux éléments de garder leur taille naturelle */
+  max-width: 200px;
+  text-align: center;
 }
   </style>

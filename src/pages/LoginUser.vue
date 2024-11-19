@@ -99,6 +99,7 @@ export default {
       }
     },
     login() {
+      this.error ='';
       const formData = new FormData();
       formData.append('nom_utilisateur', this.nom_utilisateur);
       formData.append('mot_de_passe', this.mot_de_passe);

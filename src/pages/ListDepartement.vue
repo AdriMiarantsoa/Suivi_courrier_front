@@ -19,7 +19,8 @@
                     <td>{{ departement.id_departement }}</td>
                     <td>{{ departement.nom_departement }}</td>
                     <td>{{ departement.responsable }}</td>
-                    <td>{{ departement.dept_parent }}</td>
+                    <td v-if="departement.dept_parent !=null">{{ departement.dept_parent.nom_departement }}</td>
+                    <td v-else>{{ departement.dept_parent }}</td>
                     <td>
                     <div class="btn-group">
                           <button class="btn btn-show" @click="Remove(departement)"><i class="ti-trash"></i></button>
@@ -201,7 +202,6 @@
     
   }
   .btn-group {
-    display: flex;
     gap: 10px;
   }
   .btn-show {

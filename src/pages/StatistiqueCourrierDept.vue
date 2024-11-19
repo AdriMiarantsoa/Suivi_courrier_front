@@ -54,7 +54,7 @@ export default {
         return null;
       }
 
-      const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      const labels = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Decembre'];
       const data = Array(12).fill(0); // Initialize data array with zeros
 
       this.statisticsData.forEach(item => {
@@ -68,7 +68,7 @@ export default {
         labels: labels,
         datasets: [
           {
-            label: 'Statistique courrier de cette année',
+            label: 'Représentation graphique du volume de courriers du département',
             backgroundColor: '#42A5F5',
             data: data
           }
@@ -153,31 +153,57 @@ export default {
       }
     },
     exportToPDF() {
-      const pdfContent = document.createElement('div');
+  const pdfContent = document.createElement('div');
+  
+  const currentYear = new Date().getFullYear();
+  const yearToDisplay = this.selectedYear || currentYear;
 
-      pdfContent.innerHTML = `
-        <h3 style="color:#003366;">Département : ${this.departementName}</h3>
-        <h6>Année : ${this.selectedYear || 'Actuelle'}</h6>
-        <h6>Statistiques du volume de courriers de votre département</h6>
-      `;
+  // Ajout de styles pour le PDF
+  pdfContent.style.fontFamily = 'Arial, sans-serif';
+  pdfContent.style.padding = '20px';
+  pdfContent.style.color = '#333';
+  pdfContent.style.backgroundColor = '#ffffff';
 
-      // Attendre que le graphique soit rendu
-      this.$nextTick(() => {
-        const element = this.$refs.contentToExport;
-        html2canvas(element).then((canvas) => {
-          pdfContent.appendChild(canvas);
+  pdfContent.innerHTML = `
+    <h1 style="color:#003366; text-align: center; margin-bottom: 20px;">Analyse du volume de courriers </h1>
+    <h3 style="color:#003366; text-align: center;">Département : ${this.departementName}</h3>
+    <h6 style="text-align: center;">Année : ${yearToDisplay}</h6>
+    <hr style="border: 1px solid #003366; margin: 20px 0;"/>
+    <h6 style="text-align: center;">Statistiques du volume de courriers</h6>
+    <div style="margin: 20px 0;">
+      <p>Veuillez consulter les graphiques ci-dessous pour une analyse détaillée du volume de courriers.</p>
+    </div>
+  `;
 
-          const opt = {
-            margin: 1,
-            filename: 'statistiques_courriers.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-          };
-          html2pdf().from(pdfContent).set(opt).save();
-        });
-      });
-    }
+  // Attendre que le graphique soit rendu
+  this.$nextTick(() => {
+    const element = this.$refs.contentToExport;
+  html2canvas(element, {
+      scale: 0.8, // Réduire la taille de l'image à 50%
+      useCORS: true
+    }).then((canvas) => {
+      const resizedCanvas = document.createElement('canvas');
+      const ctx = resizedCanvas.getContext('2d');
+
+      // Définir la nouvelle taille
+      resizedCanvas.width = canvas.width * 0.8;
+      resizedCanvas.height = canvas.height * 0.99;
+
+      // Dessiner l'image réduite sur le nouveau canvas
+      ctx.drawImage(canvas, 0, 0, resizedCanvas.width, resizedCanvas.height);
+      pdfContent.appendChild(resizedCanvas);
+
+      const opt = {
+        margin: 1,
+        filename: 'statistiques_courriers.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 1 }, // Garder la qualité originale pour le PDF
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().from(pdfContent).set(opt).save();
+    });
+  });
+}
   }
 };
 </script>

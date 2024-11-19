@@ -65,9 +65,9 @@
         <span class="close" @click="hideUpdateForm">&times;</span>
         <h3 style="color: #FF5733;">Rectification du Courrier</h3>
         <form @submit.prevent="submitUpdate">
-          <div v-if="errors" class="alert alert-danger">
+          <div v-if="error_upload" class="alert alert-danger">
             <ul>
-              <li v-for="error in errors" :key="error">{{ error }}</li>
+              <li v-for="error in error_upload" :key="error">{{ error }}</li>
             </ul>
           </div>
           
@@ -81,7 +81,7 @@
           </div>
           <div class="form-group">
             <label for="description">Description</label>
-            <textarea id="description" v-model="selectedCourrier.description" rows="5" required></textarea>
+            <textarea id="description" v-model="selectedCourrier.description" rows="5"></textarea>
           </div>
           <div class="form-group">
             <label for="expediteur">Expediteur</label>
@@ -94,10 +94,36 @@
               <option v-for="dept in departements" :key="dept.id" :value="dept">{{ dept.nom_departement }}</option>
             </select>
           </div>
+          <div class="form-group" v-if="fichiers && fichiers.length > 0">
+            <label for="fichiers">Fichiers associés</label>
+            <div v-if="fichiers && fichiers.length > 0">
+              <div v-for="fichier in fichiers" :key="fichier.id">
+                <div v-if="isImage(fichier)">
+                  <p>
+                    <a :href="getFileUrl(fichier.chemin)" target="_blank">{{ fichier.chemin.split('/').pop() }}</a>
+                    <img :src="getFileUrl(fichier.chemin)" alt="Image" style="max-width: 200px; max-height: 200px;" />
+                  </p>
+                </div>
+                <div v-else-if="isPdf(fichier)">
+                  <p><a :href="getFileUrl(fichier.chemin)" target="_blank">{{ fichier.chemin.split('/').pop() }}</a></p>
+                  <embed :src="getFileUrl(fichier.chemin)" type="application/pdf" width="300" height="200" />
+                </div>
+                <div v-else>
+                  <a :href="getFileUrl(fichier.chemin)" target="_blank">{{ fichier.chemin.split('/').pop() }}</a>
+                </div>
+              </div>
+            </div>
+            <div v-else>
+              <p>Aucun fichier associé.</p>
+            </div>
+          </div>
+          
           <button type="submit" class="btn btn-submit">Valider</button>
         </form>
       </div>
     </div>
+
+    
   </div>
 </template>
 
@@ -113,10 +139,12 @@ export default {
         subTitle: 'Listes des courriers en attente de confirmation'
       },
       errors: null,
+      error_upload: null,
       tableColumns: ["Id", "Date de reception", "Nom", "Description", "Expediteur", "Departement", "Actions"],
       showForm: false,
       selectedCourrier: {},
       departements: [],
+      fichiers: [],
 
       currentPage: 1,
         itemsPerPage: 5,
@@ -138,6 +166,15 @@ export default {
     }
   },
   methods: {
+    isImage(fichier) {
+      return fichier.chemin.endsWith('.png') || fichier.chemin.endsWith('.jpg') || fichier.chemin.endsWith('.jpeg') || fichier.chemin.endsWith('.gif');
+    },
+    isPdf(fichier) {
+      return fichier.chemin.endsWith('.pdf');
+    },
+    getFileUrl(chemin) {
+      return `http://localhost:8081/uploads/${chemin.split('/').pop()}`;
+    },
     async getCourriersEnAttente() {
       try {
         const params = new URLSearchParams({
@@ -185,11 +222,24 @@ export default {
         }
       }
     },
-    showUpdateForm(courrier) {
+    async showUpdateForm(courrier) {
       console.log("showUpdateForm called with:", courrier);
       this.selectedCourrier = { ...courrier };
       this.showForm = true;
       console.log("showForm set to true");
+
+      // Récupérer les fichiers associés à ce courrier
+      try {
+        const response = await axios.get(`http://localhost:8081/api/courriers/${courrier.id_courrier}/fichiers`);
+        this.fichiers = response.data; 
+
+        console.log("Fichiers associés récupérés :", this.fichiers);
+
+        } catch (error) {
+        console.error("Erreur lors de la récupération des fichiers :", error);
+        this.error_upload = ["Erreur lors de la récupération des fichiers"];
+        this.selectedCourrier.fichiers = [];
+      }
     },
     hideUpdateForm() {
       this.showForm = false;
@@ -255,7 +305,7 @@ export default {
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0,  0, 0.1);
   margin-bottom: 20px;
-  padding: 15px; /* Ajout de padding pour un meilleur espacement */
+  padding: 15px;
 }
 
 .card-header {
@@ -435,5 +485,17 @@ td.description {
 .pagination span {
   align-self: center;
   margin: 0 10px;
+}
+
+/*upload */
+.files-container {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 10px;
+}
+.file-item {
+  flex: 0 1 auto; /* Permet aux éléments de garder leur taille naturelle */
+  max-width: 200px;
+  text-align: center;
 }
 </style>

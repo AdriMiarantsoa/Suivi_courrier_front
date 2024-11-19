@@ -35,6 +35,7 @@
 </template>
 <script>
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export default {
   computed: {
@@ -83,7 +84,7 @@ export default {
     },
     logout() {
       // this.$store.commit('clearUser'); // Call the clearUser mutation
-      localStorage.clear("authToken");
+      Cookies.remove('token'); 
       this.$router.push('/'); // Redirect to login page
     }
   },
