@@ -84,7 +84,7 @@ export default {
     },
     logout() {
       // this.$store.commit('clearUser'); // Call the clearUser mutation
-      Cookies.remove('token'); 
+      localStorage.clear("authToken");
       this.$router.push('/'); // Redirect to login page
     }
   },
