@@ -8,7 +8,7 @@
               <label for="id_courrier">Id Courrier:</label>
               <input type="text" v-model="id_courrier" id="id_courrier" class="form-control" />
             </div>
-            <button class="btn btn-primary" @click="getAcheminementCourrier" style="margin-top:25px;">Voir</button>
+            <button class="btn btn-primary" @click="getAcheminementCourrier" style="margin-top:11px;">Voir</button>
           </div>
 
           <div v-if="errors" class="alert alert-danger mt-3">
