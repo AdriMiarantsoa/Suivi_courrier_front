@@ -304,7 +304,13 @@
           
           try {
             const response = await axios.get('http://localhost:8081/api/departements');
-            this.departements = response.data;
+            const allDepartements = response.data;
+            console.log("alldept :",allDepartements);
+            // Filtrer les départements pour exclure celui de l'utilisateur
+            this.departements = allDepartements.filter(departement => 
+              departement.nom_departement !== this.departementName
+            );
+            console.log("dept :",this.departements);
           } catch (error) {
             console.error(error);
           }
