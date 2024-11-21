@@ -14,22 +14,22 @@
 
         <sidebar-link
           to="/board/departement/:id_departement/courriers"
-          name="Liste de courriers en attente"
+          name="Courriers en attente"
           icon="ti-view-list-alt"
         />
         <sidebar-link
           to="/board/courriersRecu"
-          name="Liste de courriers reçus par votre departement"
+          name="Courriers reçus"
           icon="ti-view-list-alt"
         />
         <sidebar-link
           to="/board/etatCourrier"
-          name="Etat actuel du courrier"
+          name="Etat d'un courrier"
           icon="ti-view-list-alt"
         />
         <sidebar-link
           to="/board/statistique"
-          name="Statistique des courriers par an"
+          name="Statistique par an"
           icon="ti-view-list-alt"
         />
       </template>
