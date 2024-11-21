@@ -4,7 +4,7 @@
       <template slot="links">
         <sidebar-link
           to="/adminboard/users"
-          name="Liste des utilisateurs non approuvés"
+          name="Utilisateurs non approuvés"
           icon="ti-view-list-alt"
         />
         <sidebar-link
